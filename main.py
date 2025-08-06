@@ -23,8 +23,8 @@ for line in haters_data:
         haters_dict[user.strip().lower()] = msg.strip()
 
 # --- Use ENV VARS for credentials ---
-username = os.getenv("p4nda_hu")
-password = os.getenv("Oggy420")
+username = os.getenv("IG_USERNAME")
+password = os.getenv("IG_PASSWORD")
 
 if not username or not password:
     print("[❌] IG_USERNAME or IG_PASSWORD not set in environment.")
