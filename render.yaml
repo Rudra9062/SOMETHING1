@@ -1,12 +1,10 @@
 services:
   - type: worker
-    name: insta-group-bot
+    name: instagram-group-bot
     env: python
+    region: oregon
     plan: free
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python main.py"
-    envVars:
-      - key: IG_USERNAME
-        value: p4nda_hu
-      - key: IG_PASSWORD
-        value: Oggy420
+    branch: main
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
