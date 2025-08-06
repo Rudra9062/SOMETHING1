@@ -1,0 +1,2 @@
+bad_user1::Please stop bothering others.
+spam_account::You are muted for spamming.
