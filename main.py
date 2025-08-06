@@ -1,8 +1,8 @@
-import os
-import random
 import time
+import random
 from instagrapi import Client
 
+# --- Load File Safely ---
 def load_file(filename):
     try:
         with open(filename, 'r', encoding='utf-8') as f:
@@ -11,33 +11,30 @@ def load_file(filename):
         print(f"[❌] File not found: {filename}")
         return []
 
+# --- Load Data ---
 groups = load_file("groups.txt")
 messages = load_file("messages.txt")
 delays = [int(x) for x in load_file("delays.txt") if x.isdigit()]
 haters_data = load_file("haters.txt")
 
+# --- Haters Dictionary ---
 haters_dict = {}
 for line in haters_data:
     if "::" in line:
         user, msg = line.split("::", 1)
         haters_dict[user.strip().lower()] = msg.strip()
 
-# --- Use ENV VARS for credentials ---
-username = os.getenv("IG_USERNAME")
-password = os.getenv("IG_PASSWORD")
-
-if not username or not password:
-    print("[❌] IG_USERNAME or IG_PASSWORD not set in environment.")
-    exit()
-
+# --- Login using saved session ---
 cl = Client()
 try:
-    cl.login(username, password)
-    print("[✅] Logged in successfully.")
+    cl.load_settings("session.json")
+    cl.login("p4nda_hu", "Oggy420")
+    print("[✅] Logged in using saved session.")
 except Exception as e:
     print(f"[❌] Login failed: {e}")
     exit()
 
+# --- Auto-fetch groups if file is empty ---
 def fetch_group_ids():
     try:
         threads = cl.direct_threads(amount=50)
@@ -59,32 +56,33 @@ if not groups:
     groups = fetch_group_ids()
 
 if not groups or not messages:
-    print("[⚠️] Missing groups or messages. Exiting.")
+    print("[⚠️] Exiting: Missing groups or messages.")
     exit()
 
-# --- Loop forever ---
+# --- Message Sending Loop ---
 while True:
     try:
         group_id = random.choice(groups)
         thread = cl.direct_thread(group_id)
         usernames = [u.username.lower() for u in thread.users]
 
+        # Check for haters
         message = random.choice(messages)
         for user in usernames:
             if user in haters_dict:
                 message = haters_dict[user]
-                print(f"[⚠️] Hater detected: {user}, using custom message.")
+                print(f"[⚠️] Hater detected: {user}, sending custom message.")
                 break
 
-        print(f"[➡️] Sending to {group_id}")
+        print(f"[➡️] Sending to group {group_id}")
         cl.direct_send(message, thread_ids=[group_id])
         print(f"[✅] Sent: {message}")
 
         delay = random.choice(delays) if delays else random.randint(300, 600)
-        print(f"[⏳] Sleeping {delay // 60}m {delay % 60}s\n")
+        print(f"[⏳] Waiting {delay // 60}m {delay % 60}s...\n")
         time.sleep(delay)
 
     except Exception as e:
         print(f"[❌] Error: {e}")
-        print("[⏸️] Sleeping 60s before retry...\n")
+        print("[⏸️] Waiting 60s before retrying...\n")
         time.sleep(60)
