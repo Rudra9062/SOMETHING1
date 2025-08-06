@@ -7,6 +7,6 @@ services:
     startCommand: "python main.py"
     envVars:
       - key: IG_USERNAME
-        value: your_instagram_username
+        value: p4nda_hu
       - key: IG_PASSWORD
-        value: your_instagram_password
+        value: Oggy420
