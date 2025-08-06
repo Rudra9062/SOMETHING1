@@ -1,0 +1,12 @@
+services:
+  - type: worker
+    name: insta-group-bot
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python main.py"
+    envVars:
+      - key: IG_USERNAME
+        value: your_instagram_username
+      - key: IG_PASSWORD
+        value: your_instagram_password
